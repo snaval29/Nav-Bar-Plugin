@@ -2,7 +2,6 @@
 <html>
 <head>
 <style>
-  /* (Keep your existing CSS styles here - they were good!) */
   :root { --primary: #2C6CFF; --bg: #F8F9FC; --surface: #FFFFFF; --border: #E5E8EB; --text: #1F2937; }
   body { font-family: 'Inter', sans-serif; padding: 0; margin: 0; background-color: var(--bg); color: var(--text); }
   .header { background: var(--surface); padding: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
@@ -22,14 +21,13 @@
   .card-label { font-size: 12px; font-weight: 600; }
   .footer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); padding: 16px 20px; border-top: 1px solid var(--border); }
   button { background: var(--primary); color: white; border: none; padding: 12px; font-weight: 600; width: 100%; border-radius: 8px; cursor: pointer; }
-  button:disabled { background: #ccc; cursor: wait; }
 </style>
 </head>
 <body>
 
   <div class="header">
-    <h2>Nav Architect Pro</h2>
-    <p>Powered by Iconify API</p>
+    <h2>Nav Component Builder</h2>
+    <p>Generates Master Components</p>
   </div>
 
   <div class="container">
@@ -47,10 +45,6 @@
           <option value="Inter">Inter</option>
           <option value="Roboto">Roboto</option>
           <option value="Poppins">Poppins</option>
-          <option value="Lato">Lato</option>
-          <option value="Montserrat">Montserrat</option>
-          <option value="Oswald">Oswald</option>
-          <option value="Playfair Display">Playfair Display</option>
         </select>
       </div>
     </div>
@@ -62,7 +56,7 @@
     </div>
 
     <label>Menu Items</label>
-    <input type="text" id="sections" value="Home, Search, Notifications, Profile" placeholder="e.g. Home, Camera, Wifi, Settings">
+    <input type="text" id="sections" value="Home, Courses, Doubt, Profile" placeholder="e.g. Home, Cart, Settings">
 
     <label>Select Theme</label>
     <div class="theme-grid">
@@ -82,7 +76,7 @@
   </div>
 
   <div class="footer">
-    <button id="create">Generate Component</button>
+    <button id="create">Create Component</button>
   </div>
 
   <script>
@@ -97,29 +91,7 @@
       else r.value = 24;
     }
 
-    // --- NEW: FETCH ICONS FROM WEB ---
-    async function fetchIconSvg(keyword) {
-      // Clean keyword (e.g., "My Profile" -> "account")
-      let term = keyword.toLowerCase().trim().split(' ').pop();
-      // Map common terms to Material Design names
-      const map = { profile: 'account', settings: 'cog', cart: 'cart', search: 'magnify', home: 'home', like: 'heart' };
-      if (map[term]) term = map[term];
-
-      try {
-        // Fetch from Iconify (Material Design Icons)
-        const response = await fetch(`https://api.iconify.design/mdi/${term}.svg`);
-        if (!response.ok) return null;
-        return await response.text();
-      } catch (e) {
-        return null;
-      }
-    }
-
-    document.getElementById('create').onclick = async () => {
-      const btn = document.getElementById('create');
-      btn.innerText = "Fetching Icons...";
-      btn.disabled = true;
-
+    document.getElementById('create').onclick = () => {
       const navType = document.getElementById('navType').value;
       const fontFamily = document.getElementById('fontFamily').value;
       const width = document.getElementById('width').value;
@@ -128,26 +100,13 @@
       const sections = document.getElementById('sections').value.split(',');
       const styleSelect = selectedTheme;
 
-      // Prepare data with fetched icons
-      const itemsData = [];
-      
-      for (let section of sections) {
-        const name = section.trim();
-        const svgContent = await fetchIconSvg(name);
-        itemsData.push({ name, svg: svgContent });
-      }
-
-      // Send EVERYTHING to code.ts
+      // Pass raw text to code.ts. We will handle icons LOCALLY there to be 100% safe.
       parent.postMessage({ 
         pluginMessage: { 
           type: 'create-navbar', 
-          navType, fontFamily, width, height, radius, styleSelect,
-          itemsData // We send the full SVG strings now!
+          navType, fontFamily, width, height, radius, styleSelect, sections 
         } 
       }, '*');
-
-      btn.innerText = "Generate Component";
-      btn.disabled = false;
     }
   </script>
 </body>
