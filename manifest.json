@@ -1,5 +1,5 @@
 {
-  "name": "NavBar",
+  "name": "Nav Architect Pro",
   "id": "1586611732146203206",
   "api": "1.0.0",
   "main": "code.js",
@@ -12,7 +12,7 @@
   "ui": "ui.html",
   "networkAccess": {
     "allowedDomains": [
-      "none"
+      "https://api.iconify.design"
     ]
   }
 }
